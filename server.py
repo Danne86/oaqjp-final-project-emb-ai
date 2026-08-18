@@ -1,15 +1,29 @@
-from flask import Flask, render_template, request
+''' Executing this function initiates the application of emotion
+    detector to be executed over the Flask channel and deployed on
+    localhost:5000.
+'''
+from flask import Flask, request
 from EmotionDetection.emotion_detection import emotion_detector
 
 app = Flask("Emotion Detector")
 
 @app.route("/emotionDetector")
 def sent_detector():
+    ''' This code receives the text from the HTML interface and 
+        runs sentiment analysis over it using emotion_detector()
+        function. The output returned shows the emotionscores
+        and the dominant emotion for the provided text.
+    '''
     text_to_analyse = request.args.get('textToAnalyze')
-    result = sentiment_analyzer(text_to_analyse)
+    result = emotion_detector(text_to_analyse)
     if result['dominant_emotion'] is None:
         return "Invalid text! Please try again!"
-    return "For the given statement, the system response is 'anger': {}, 'disgust': {}, 'fear': {}, 'joy': {} and 'sadness': {}. The dominant emotion is {}.".format(result['anger'], result['disgust'], result['fear'], result['joy'], result['sadness'], result['dominant_empotion'])
+    return (
+        "For the given statement, the system response is ",
+        f"'anger': {result['anger']}, 'disgust': {result['disgust']}, 'fear': {result['fear']},"
+        f" 'joy': {result['joy']} and 'sadness': {result['sadness']}. ",
+        f"The dominant emotion is {result['dominant_empotion']}."
+        )
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
